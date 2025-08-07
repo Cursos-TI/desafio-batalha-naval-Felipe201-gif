@@ -1,1 +1,95 @@
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAM 5 // Tamanho do tabuleiro 5x5
+#define MAX_TENTATIVAS 5
+
+void inicializarTabuleiro(char tabuleiro[TAM][TAM]) {
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            tabuleiro[i][j] = '~'; // água
+        }
+    }
+}
+
+void mostrarTabuleiro(char tabuleiro[TAM][TAM]) {
+    printf("  ");
+    for (int i = 0; i < TAM; i++) printf("%d ", i);
+    printf("\n");
+
+    for (int i = 0; i < TAM; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < TAM; j++) {
+            printf("%c ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    char tabuleiro[TAM][TAM];
+    int linhaTiro, colunaTiro;
+    int linhaNavio, colunaNavio;
+    int tentativa = 0;
+    int acertou = 0;
+
+    srand(time(NULL)); // semente aleatória
+
+    // Inicializa o tabuleiro
+    inicializarTabuleiro(tabuleiro);
+
+    // Posição aleatória do navio
+    linhaNavio = rand() % TAM;
+    colunaNavio = rand() % TAM;
+
+    printf("=== BATALHA NAVAL ===\n");
+    printf("Tente afundar o navio inimigo!\n");
+    printf("Você tem %d tentativas.\n\n", MAX_TENTATIVAS);
+
+    while (tentativa < MAX_TENTATIVAS && !acertou) {
+        mostrarTabuleiro(tabuleiro);
+
+        // Entrada do jogador
+        printf("\nTentativa %d:\n", tentativa + 1);
+        printf("Digite a linha (0-%d): ", TAM - 1);
+        scanf("%d", &linhaTiro);
+        printf("Digite a coluna (0-%d): ", TAM - 1);
+        scanf("%d", &colunaTiro);
+
+        // Validação
+        if (linhaTiro < 0 || linhaTiro >= TAM || colunaTiro < 0 || colunaTiro >= TAM) {
+            printf("Coordenadas inválidas! Tente novamente.\n");
+            continue;
+        }
+
+        // Verifica se acertou
+        if (linhaTiro == linhaNavio && colunaTiro == colunaNavio) {
+            printf("\n🎯 Parabéns! Você acertou o navio!\n");
+            tabuleiro[linhaTiro][colunaTiro] = 'X';
+            acertou = 1;
+        } else {
+            printf("💧 Água! Você errou...\n");
+            if (tabuleiro[linhaTiro][colunaTiro] == '~') {
+                tabuleiro[linhaTiro][colunaTiro] = 'O';
+            } else {
+                printf("Você já tentou essa posição.\n");
+            }
+        }
+
+        tentativa++;
+    }
+
+    // Resultado final
+    if (!acertou) {
+        printf("\n💥 Fim de jogo! Você perdeu.\n");
+        printf("O navio estava na posição (%d, %d)\n", linhaNavio, colunaNavio);
+        tabuleiro[linhaNavio][colunaNavio] = 'N';
+    }
+
+    printf("\nTabuleiro final:\n");
+    mostrarTabuleiro(tabuleiro);
+
+    return 0;
+}
